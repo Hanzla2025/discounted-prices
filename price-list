@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dessert Menu Infographic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #FFF8F0;
+            color: #3A3A3A;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 450px;
+                max-height: 500px;
+            }
+        }
+        .kpi-value {
+            font-size: 4rem;
+            line-height: 1;
+        }
+        .kpi-label {
+            font-size: 1.125rem;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- 
+    Chosen Color Palette: Energetic & Playful
+    - Background: #FFF8F0
+    - Text/Dark Accent: #3A3A3A
+    - Primary Chart Color (Actual Price): #FF6B6B
+    - Secondary Chart Color (Discounted Price): #4ECDC4
+    - Highlight Accent 1: #FFD166
+    - Highlight Accent 2: #1A535C
+
+    Narrative Plan:
+    1. Hero: Grab attention with a big title.
+    2. Price Comparison: Use a grouped bar chart to visually compare actual vs. discounted prices for all items.
+    3. Hot Items Spotlight: Use styled cards to feature the priority marketing items.
+    4. Full Menu Data: Provide a clean, styled table for full details.
+
+    Visualization Choices:
+    - Actual vs. Discounted Prices -> Goal: Compare -> Chosen Viz: Grouped Bar Chart -> Justification: Best for direct value comparison across multiple categories. Method: Chart.js/Canvas. NO SVG.
+    - Priority Items -> Goal: Inform/Organize -> Chosen Viz: Styled Cards -> Justification: Creates a distinct visual focus on key products. Method: HTML/CSS with Tailwind. NO SVG.
+    - Full Menu -> Goal: Organize -> Chosen Viz: HTML Table -> Justification: Clear and comprehensive data reference. Method: HTML/CSS. NO SVG.
+    
+    Confirmation: NEITHER Mermaid JS NOR SVG were used in this document. All charts are rendered on HTML Canvas elements by Chart.js.
+    -->
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-6xl font-bold text-[#1A535C] mb-2">Sweet Deals Dashboard</h1>
+            <p class="text-lg text-gray-600">A visual guide to our delicious dessert menu and special offers!</p>
+        </header>
+
+        <!-- Removed KPI section -->
+
+        <section id="price-comparison" class="bg-white rounded-lg shadow-lg p-6 md:p-8 mb-12">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-[#1A535C] mb-2">Menu Price Showdown</h2>
+            <p class="text-center text-gray-600 mb-6">Here's a look at our original prices versus the amazing discounted prices you get. The difference is savings in your pocket!</p>
+            <div class="chart-container">
+                <canvas id="priceComparisonChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Removed discount-ranking section -->
+        
+        <section id="hot-items" class="mb-12">
+             <h2 class="text-2xl md:text-3xl font-bold text-center text-[#1A535C] mb-6">Prioritize items</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-gradient-to-br from-[#FFD166] to-[#FF6B6B] text-white rounded-lg shadow-xl p-8 flex flex-col justify-center items-center text-center">
+                    <h3 class="text-3xl font-bold mb-2">Nutella Cake</h3>
+                    <p class="text-lg font-semibold mb-4">(Top Priority)</p>
+                    <p class="text-5xl font-bold">700 <span class="text-2xl">PKR</span></p>
+                    <p class="mt-4 max-w-sm">Our most requested and decadent cake. This premium item is now available at a special discounted price!</p>
+                </div>
+                <div class="bg-gradient-to-br from-[#4ECDC4] to-[#1A535C] text-white rounded-lg shadow-xl p-8 flex flex-col justify-center items-center text-center">
+                    <h3 class="text-3xl font-bold mb-2">Three Milk Cake</h3>
+                    <p class="text-lg font-semibold mb-4">(Priority)</p>
+                    <p class="text-5xl font-bold">170 <span class="text-2xl">PKR</span></p>
+                    <p class="mt-4 max-w-sm">A fan-favorite for its rich, moist texture. Available in Nutella or Lotus flavors, now at an even sweeter price!</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="full-menu" class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-[#1A535C] mb-6">Price comparison</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="p-4 font-semibold">Product</th>
+                            <th class="p-4 font-semibold text-right">Actual Price (PKR)</th>
+                            <th class="p-4 font-semibold text-right">Discounted Price (PKR)</th>
+                            <th class="p-4 font-semibold text-right">You Save (PKR)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="menu-table-body" class="divide-y">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <footer class="text-center p-6 mt-8 text-gray-500">
+    </footer>
+
+    <script>
+        const dessertData = [
+            { product: 'Sundae (Nutella + Caramel)', actual: 200, discounted: 170 },
+            { product: 'Sundae (Lotus)', actual: 250, discounted: 200 },
+            { product: 'Dream Cake + Lava Cake', actual: 500, discounted: 350 },
+            { product: 'Puff', actual: 50, discounted: 30 },
+            { product: 'Small Pastry', actual: 150, discounted: 130 },
+            { product: '3-layer Large Pastry', actual: 200, discounted: 170 },
+            { product: 'Nutella Fudge Brownie', actual: 250, discounted: 200 },
+            { product: 'Simple Donuts', actual: 150, discounted: 130 },
+            { product: 'Filled Donuts', actual: 200, discounted: 170 },
+            { product: 'Bento Cake', actual: 500, discounted: 350 }, // Updated discounted price
+            { product: 'Cheesecake Slice', actual: 300, discounted: 200 },
+            { product: 'Three Milk Cake (Nutella/Lotus)', actual: 250, discounted: 170 }, 
+            { product: 'Nutella Cake', actual: 1500, discounted: 700 }, 
+        ];
+
+        function wrapLabel(str, maxWidth) {
+            if (str.length <= maxWidth) {
+                return str;
+            }
+            const words = str.split(' ');
+            const lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + word).length > maxWidth) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                currentLine += word + ' ';
+            }
+            lines.push(currentLine.trim());
+            return lines.filter(line => line.length > 0);
+        }
+
+        const chartTooltipOptions = {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                                return label.join(' ');
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const labels = dessertData.map(d => wrapLabel(d.product, 16));
+            const actualPrices = dessertData.map(d => d.actual);
+            const discountedPrices = dessertData.map(d => d.discounted);
+
+            const ctxPrice = document.getElementById('priceComparisonChart').getContext('2d');
+            new Chart(ctxPrice, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Actual Price (PKR)',
+                            data: actualPrices,
+                            backgroundColor: '#FF6B6B',
+                            borderColor: '#FF6B6B',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Discounted Price (PKR)',
+                            data: discountedPrices,
+                            backgroundColor: '#4ECDC4',
+                            borderColor: '#4ECDC4',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    ...chartTooltipOptions,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Price (PKR)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Removed discount ranking chart logic as the section is removed
+            
+            // Removed average discount KPI calculation as the section is removed
+            
+            const tableBody = document.getElementById('menu-table-body');
+            tableBody.innerHTML = ''; // Clear existing rows
+            dessertData.forEach(item => {
+                const save = item.actual - item.discounted;
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                row.innerHTML = `
+                    <td class="p-4 font-medium">${item.product}</td>
+                    <td class="p-4 text-right text-gray-500 ${save > 0 ? 'line-through' : ''}">${item.actual.toFixed(2)}</td>
+                    <td class="p-4 text-right font-semibold text-[#1A535C]">${item.discounted.toFixed(2)}</td>
+                    <td class="p-4 text-right font-semibold text-[#FF6B6B]">${save > 0 ? save.toFixed(2) : '-'}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            document.getElementById('generation-date').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        });
+    </script>
+</body>
+</html>
